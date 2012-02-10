@@ -4,14 +4,18 @@
   <meta charset="UTF-8">
   <title>3dmodelviewer.jquery simple example</title>
 </head>
-<body>
-    <div id="player"></div>
+<body>// cross origin policy may stop you from viewing this
+    <div id="player" style="width:400px;height:400px;border:1px solid #CCC;"></div>
+    <p>Original model provided by the <a href="http://graphics.stanford.edu/data/3Dscanrep/">Stanford Computer Graphics Library / Stanford 3D Scanning Repository</a>.</p>
 
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//raw.github.com/rckt/3dmodelviewer.jquery/master/3dmodelviewer.jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/Three.js/build/Three.js"></script>
+    <script type="text/javascript" src="../3dmodelviewer.jquery.min.js"></script>
     <script type="text/javascript">
         $('#player').threeDeeModelViewer({
-            model: { mesh: '' }
+            // cross origin policy may stop you from viewing this
+            model: { mesh: 'http://github.rckt.co.uk/3dmodelviewer.jquery/models/meshes/StanfordBunny.js' },
+            autorotate: true
         });
     </script>
 </body>

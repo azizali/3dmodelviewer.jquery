@@ -5,10 +5,15 @@
   <title>3dmodelviewer.jquery complex example</title>
 </head>
 <body>
-    <div id="player"><span class="message">You don't seem to be able to view this model</span></div>
+    <p><a href="http://rckt.github.com/3dmodelviewer.jquery/models/meshes/StanfordLucy.js">Load Lucy model (<strong>warning</strong>: high resolution) &rarr;</a></p>
+    <div id="player" style="width:800px;height:800px;border:1px solid #CCC;">
+        <span class="message">You don't seem to be able to view this model</span>
+    </div>
+    <p>Duck model supplied in <a href="http://meshlab.sourceforge.net/">MeshLab examples</a><br>Lucy model provided by the <a href="http://graphics.stanford.edu/data/3Dscanrep/">Stanford Computer Graphics Library / Stanford 3D Scanning Repository</a>.</p>
 
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//raw.github.com/rckt/3dmodelviewer.jquery/master/3dmodelviewer.jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/Three.js/build/Three.js"></script>
+    <script type="text/javascript" src="../3dmodelviewer.jquery.min.js"></script>
     <script type="text/javascript">
         // check for webGL support
         var webglSupport = (!!window.WebGLRenderingContext);
@@ -21,16 +26,33 @@
 
         // continue if webglSupport
         if (webglSupport) {
-            $('#player').threeDeeModelViewer({
-                model: {
-                    mesh: '',
-                    texture: ''
+            $('#player').on({ // event support
+                '3dmv.playerloaded': function() {
+                    console.log('hello');
+                    $(this).after('<p>Player loaded</p>');
                 },
-                backgroundColour: 0xFF00FF,
-                backgroundAlpha: 0.5,
-                cameraPosition: { x: -5, y: -5, z: -10 },
-                autorotate: true
-            }).find('.message').remove();
+                '3dmv.sceneloaded': function() {
+                    $(this).after('<p>Scene loaded</p>');
+                }
+            }).threeDeeModelViewer({
+                model: { // model with a texture
+                    // cross origin policy may stop you from viewing this
+                    mesh: 'http://github.rckt.co.uk/3dmodelviewer.jquery/models/meshes/Duck.js',
+                    texture: 'http://github.rckt.co.uk/3dmodelviewer.jquery/models/textures/Duck.jpg'
+                },
+                backgroundColour: 0x000000, // custom background colour
+                backgroundAlpha: 0.75, // custom background alpha
+                cameraPosition: { x: 0, y: 0, z: 400 },
+                autorotate: true // rotate
+            }).find('.message').remove(); // remove the "Not supported" message
+
+            $('a').on('click', function(evt) { // load a new model inline
+                evt.preventDefault();
+                $('#player').on('3dmv.sceneloaded', function() {
+                    // set the zoom level as Lucy is a larger scale model than the duck
+                    $(this).threeDeeModelViewer('translate', $.fn.threeDeeModelViewer.OUT, 1600);
+                }).threeDeeModelViewer('loadModel', $(this).attr('href')); // textureless model
+            });
         }
     </script>
 </body>

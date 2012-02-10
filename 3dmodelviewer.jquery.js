@@ -28,25 +28,23 @@
                     // scene
                     data.scene = new THREE.Scene();
                     // camera
-                    data.camera = new THREE.PerspectiveCamera( 70, $this.width() / $this.height(), 1, 1000 );
+                    data.camera = new THREE.PerspectiveCamera( 70, $this.width() / $this.height(), 1, 100000 );
                     data.camera.position = opts.cameraPosition;
                     data.scene.add(data.camera);
-                    // model
-                    $this.trigger('threedee.playerloaded');
 
                     data.opts = opts;
-                    $this.data('3dmv', data);
+                    $this.trigger('3dmv.playerloaded').data('3dmv', data);
 
                     if (data.model.mesh != '') {
-                        $this.threedee('loadModel', data.model.mesh, data.model.texture);
+                        $this.threeDeeModelViewer('loadModel', data.model.mesh, data.model.texture);
                     }
 
                     if (opts.autorotate) {
-                        $this.threedee('autorotate', 0);
+                        $this.threeDeeModelViewer('autorotate', 0);
                     }
                 }
 
-                $this.threedee('animate');
+                $this.threeDeeModelViewer('animate');
             });
         },
 
@@ -72,10 +70,25 @@
 
                 var callback = function(geometry) {
                     data.texture = THREE.ImageUtils.loadTexture(texture, THREE.UVMapping);
-                    data.material = new THREE.MeshBasicMaterial( {color: 0xffffff, map: data.texture, wireframe: false} );
+                    if (texture) {
+                        data.material = new THREE.MeshBasicMaterial({
+                            color: 0xFFFFFF,
+                            map: data.texture,
+                            wireframe: false
+                        });
+                    } else {
+                        var dl = new THREE.DirectionalLight(0xFFFFFF, 0.75);
+                        dl.position.set(1, 1, 2).normalize();
+                        data.scene.add(dl);
+
+                        data.material = new THREE.MeshLambertMaterial({
+                            color: 0xFFFFFF,
+                            shading: THREE.FlatShading
+                        });
+                    }
                     data.mesh = new THREE.Mesh(geometry, data.material);
                     data.scene.add(data.mesh);
-                    $this.trigger('threedee.sceneloaded').data('3dmv', data);
+                    $this.trigger('3dmv.sceneloaded').data('3dmv', data);
                 };
 
                 if (typeof model == 'object') {
@@ -208,6 +221,15 @@
         },
 
         /**
+         * Gets the Three.js scene object from the first viewer in the set
+         * @return THREE.Scene
+         */
+        getScene: function() {
+            var $this = this.first(), data = $this.data('3dmv');
+            return data.scene;
+        },
+
+        /**
          * Internal function for requesting an animation frame and calling the
          * render function
          * @see render
@@ -217,8 +239,8 @@
             return this.each(function() {
                 var $this = $(this), data = $this.data('3dmv');
                 if (data) {
-                    window.requestAnimationFrame(function() { $this.threedee('animate'); });
-                    $(this).threedee('render');
+                    window.requestAnimationFrame(function() { $this.threeDeeModelViewer('animate'); });
+                    $(this).threeDeeModelViewer('render');
                 }
             });
         },
@@ -244,9 +266,9 @@
           return this.each(function() {
               var $this = $(this), data = $this.data('3dmv');
 
-              $this.threedee('translate', $.fn.threeDeeModelViewer.UP, 0)
-                .threedee('translate', $.fn.threeDeeModelViewer.LEFT, 0)
-                .threedee('translate', $.fn.threeDeeModelViewer.OUT, data.opts.cameraPosition.z);
+              $this.threeDeeModelViewer('translate', $.fn.threeDeeModelViewer.UP, 0)
+                .threeDeeModelViewer('translate', $.fn.threeDeeModelViewer.LEFT, 0)
+                .threeDeeModelViewer('translate', $.fn.threeDeeModelViewer.OUT, data.opts.cameraPosition.z);
           });
         },
 
@@ -282,7 +304,7 @@
 
                 data.autorotateDelay = setTimeout(function() {
                     data.autorotateTimer = setInterval(function() {
-                        $this.threedee('translate', $.fn.threeDeeModelViewer.LEFT, '+=' + 0.015);
+                        $this.threeDeeModelViewer('translate', $.fn.threeDeeModelViewer.LEFT, '+=' + 0.015);
                     }, 33);
                 }, delay);
 
