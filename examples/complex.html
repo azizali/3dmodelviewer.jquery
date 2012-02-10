@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3dmodelviewer.jquery complex example</title>
+</head>
+<body>
+    <div id="player"><span class="message">You don't seem to be able to view this model</span></div>
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//raw.github.com/rckt/3dmodelviewer.jquery/master/3dmodelviewer.jquery.min.js"></script>
+    <script type="text/javascript">
+        // check for webGL support
+        var webglSupport = (!!window.WebGLRenderingContext);
+        if (webglSupport) { // support, but not necessarily ability
+            var glc = $('<canvas />').appendTo('body')[0];
+            try {
+                webglSupport = ( (glc.getContext('webgl') || glc.getContext('experimental-webgl')) instanceof WebGLRenderingContext );
+            } catch (e) { }
+        }
+
+        // continue if webglSupport
+        if (webglSupport) {
+            $('#player').threeDeeModelViewer({
+                model: {
+                    mesh: '',
+                    texture: ''
+                },
+                backgroundColour: 0xFF00FF,
+                backgroundAlpha: 0.5,
+                cameraPosition: { x: -5, y: -5, z: -10 },
+                autorotate: true
+            }).find('.message').remove();
+        }
+    </script>
+</body>
+</html>
