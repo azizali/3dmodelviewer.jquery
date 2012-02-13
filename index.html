@@ -59,10 +59,11 @@
         // check for webGL support
         var webglSupport = (!!window.WebGLRenderingContext);
         if (webglSupport) { // support, but not necessarily ability
-            var glc = $('<canvas />').appendTo('body')[0];
+            var glc = $('<canvas width="1" height="1" />').appendTo('body')[0];
             try {
                 webglSupport = ( (glc.getContext('webgl') || glc.getContext('experimental-webgl')) instanceof WebGLRenderingContext );
             } catch (e) { }
+            $(glc).remove();
         }
 
         // continue if webglSupport
