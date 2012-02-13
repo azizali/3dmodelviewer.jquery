@@ -3,9 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <title>3dmodelviewer.jquery</title>
+  <link rel="stylesheet" type="text/css" media="all" href="css/style.css">
+  <style type="text/css" media="all">
+      #playerSimple, #playerComplex { margin-bottom: 10px; }
+      p + h2 { margin-top: 49px; }
+  </style>
+
+  <script type="text/javascript" src="js/fonts.js"></script>
+  <script type="text/javascript" src="js/modernizr.js"></script>
 </head>
 <body>
-    <h1>3dmodelviewer.jquery plugin</h1>
-    <p>A plugin for jQuery using Three.js to show 3D models using WebGL.</p>
+    <header>
+        <a href="http://www.rckt.co.uk"><img src="img/rckt-lg.png" alt="rckt"></a>
+    </header>
+
+    <article>
+        <h1>3dmodelviewer.jquery plugin</h1>
+        <p>A plugin for jQuery using Three.js to show 3D models using WebGL. For the full <abbr title="Application Programming Interface">API</abbr> check out the <a href="http://github.com/rckt/3dmodelviewer.jquery">GitHub project</a>.</p>
+
+        <h2>Simple example</h2>
+        <div id="playerSimple" style="width:400px;height:400px;border:1px solid #CCC;"></div>
+        <p>Original model provided by the <a href="http://graphics.stanford.edu/data/3Dscanrep/">Stanford Computer Graphics Library / Stanford 3D Scanning Repository</a>.</p>
+
+        <h2>Complex example</h2>
+        <p><a href="models/meshes/StanfordLucy.js" class="modelLoader">Load Lucy model (<strong>warning</strong>: high resolution) &rarr;</a></p>
+        <div id="playerComplex" style="width:800px;height:800px;border:1px solid #CCC;">
+            <span class="message">You don't seem to be able to view this model</span>
+        </div>
+        <p>Duck model supplied in <a href="http://meshlab.sourceforge.net/">MeshLab examples</a><br>Lucy model provided by the <a href="http://graphics.stanford.edu/data/3Dscanrep/">Stanford Computer Graphics Library / Stanford 3D Scanning Repository</a>.</p>
+    </article>
+
+    <footer>
+        <span id="contact">(+44) (0)114 30 30 100 | <a href="mailto:info@rckt.co.uk">info@rckt.co.uk</a></span>
+        <a href="http://www.rckt.co.uk"><img src="img/rckt-sml.png" alt="rckt"></a>
+    </footer>
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/Three.js"></script>
+    <script type="text/javascript" src="js/3dmodelviewer.jquery.min.js"></script>
+
+    <script type="text/javascript">
+        //
+        // simple player example
+        //
+        $('#playerSimple').threeDeeModelViewer({
+            // cross origin policy may stop you from viewing this
+            model: { mesh: 'models/meshes/StanfordBunny.js' },
+            autorotate: true
+        });
+
+        //
+        // complex player example
+        //
+
+        // check for webGL support
+        var webglSupport = (!!window.WebGLRenderingContext);
+        if (webglSupport) { // support, but not necessarily ability
+            var glc = $('<canvas />').appendTo('body')[0];
+            try {
+                webglSupport = ( (glc.getContext('webgl') || glc.getContext('experimental-webgl')) instanceof WebGLRenderingContext );
+            } catch (e) { }
+        }
+
+        // continue if webglSupport
+        if (webglSupport) {
+            $('#playerComplex').on({ // event support
+                '3dmv.playerloaded': function() {
+                    $(this).after('<p>&rarr; Player loaded</p>');
+                },
+                '3dmv.sceneloaded': function() {
+                    $(this).after('<p>&rarr; Scene loaded</p>');
+                }
+            }).threeDeeModelViewer({
+                model: { // model with a texture
+                    mesh: 'models/meshes/Duck.js',
+                    texture: 'models/textures/Duck.jpg'
+                },
+                backgroundColour: 0x000000, // custom background colour
+                backgroundAlpha: 0.75, // custom background alpha
+                cameraPosition: { x: 0, y: 0, z: 400 },
+                autorotate: true // rotate
+            }).find('.message').remove(); // remove the "Not supported" message
+
+            $('a.modelLoader').on('click', function(evt) { // load a new model inline
+                evt.preventDefault();
+                $('#playerComplex').on('3dmv.sceneloaded', function() {
+                    // set the zoom level as Lucy is a larger scale model than the duck
+                    $(this).threeDeeModelViewer('translate', $.fn.threeDeeModelViewer.OUT, 1600);
+                }).threeDeeModelViewer('loadModel', $(this).attr('href')); // textureless model
+            });
+        }
+    </script>
 </body>
 </html>
