@@ -5,7 +5,7 @@
   <title>3dmodelviewer.jquery complex example</title>
 </head>
 <body>
-    <p><a href="http://rckt.github.com/3dmodelviewer.jquery/models/meshes/StanfordLucy.js">Load Lucy model (<strong>warning</strong>: high resolution) &rarr;</a></p>
+    <p><a href="http://github.rckt.co.uk/3dmodelviewer.jquery/models/meshes/StanfordLucy.js" class="modelLoader">Load Lucy model (<strong>warning</strong>: high resolution) &rarr;</a></p>
     <div id="player" style="width:800px;height:800px;border:1px solid #CCC;">
         <span class="message">You don't seem to be able to view this model</span>
     </div>
@@ -28,7 +28,6 @@
         if (webglSupport) {
             $('#player').on({ // event support
                 '3dmv.playerloaded': function() {
-                    console.log('hello');
                     $(this).after('<p>Player loaded</p>');
                 },
                 '3dmv.sceneloaded': function() {
@@ -36,7 +35,6 @@
                 }
             }).threeDeeModelViewer({
                 model: { // model with a texture
-                    // cross origin policy may stop you from viewing this
                     mesh: 'http://github.rckt.co.uk/3dmodelviewer.jquery/models/meshes/Duck.js',
                     texture: 'http://github.rckt.co.uk/3dmodelviewer.jquery/models/textures/Duck.jpg'
                 },
@@ -46,7 +44,7 @@
                 autorotate: true // rotate
             }).find('.message').remove(); // remove the "Not supported" message
 
-            $('a').on('click', function(evt) { // load a new model inline
+            $('a.modelLoader').on('click', function(evt) { // load a new model inline
                 evt.preventDefault();
                 $('#player').on('3dmv.sceneloaded', function() {
                     // set the zoom level as Lucy is a larger scale model than the duck

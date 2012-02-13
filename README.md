@@ -1,6 +1,6 @@
 # 3dmodelviewer.jquery
 
-A 3D model viewer utilising [Three.js](http://github.com/mrdoob/three.js/) and jQuery.
+A 3D model viewer utilising [Three.js](http://github.com/mrdoob/three.js/) and jQuery released under a [Creative Commons Attribution Share-Alike license](http://creativecommons.org/licenses/by-sa/3.0/).
 
 ## Motivation
 
